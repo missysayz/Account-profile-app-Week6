@@ -1,17 +1,25 @@
 import React from "react";
 import { Form } from "semantic-ui-react";
+import { AccountConsumer } from "../Providers/AccountProvider";
 
 class AccountForm extends React.Component {
-  state = { username: "", membershipLevel: "" };
+  state = {
+    username: this.props.username,
+    membershipLevel: this.props.membershipLevel
+  };
 
-  handleChange = (e, { name, value }) => this.setState({ [name]: value });
+  handleChange = (e, { name, value }) => {
+    this.setState({ [name]: value });
+  };
 
   handleSubmit = e => {
     e.preventDefault();
+    this.props.updateAccount({ ...this.state });
   };
 
   render() {
     const { username, membershipLevel } = this.state;
+
     return (
       <Form onSubmit={this.handleSubmit}>
         <Form.Input
@@ -28,7 +36,9 @@ class AccountForm extends React.Component {
           onChange={this.handleChange}
           options={membershipOptions}
         />
-        <Form.Button color='blue'>Save</Form.Button>
+        <Form.Button color='purple' inverted>
+          Save
+        </Form.Button>
       </Form>
     );
   }
@@ -38,7 +48,21 @@ const membershipOptions = [
   { key: "b", text: "Bronze", value: "Bronze" },
   { key: "s", text: "Silver", value: "Silver" },
   { key: "g", text: "Gold", value: "Gold" },
-  { key: "p", text: "Platinum", value: "Platinum" }
+  { key: "p", text: "Platinum", value: "Platinum" },
+  { key: "d", text: "Diamond", value: "Diamond" }
 ];
 
-export default AccountForm;
+const ConnectedAccountForm = props => (
+  <AccountConsumer>
+    {value => (
+      <AccountForm
+        {...props}
+        username={value.username}
+        membershipLevel={value.membershipLevel}
+        updateAccount={value.updateAccount}
+      />
+    )}
+  </AccountConsumer>
+);
+
+export default ConnectedAccountForm;
